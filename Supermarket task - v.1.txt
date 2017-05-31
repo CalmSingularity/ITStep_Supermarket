@@ -1,0 +1,20 @@
+Создать базовый класс Product, который имеет поля:
+product_code
+product_name
+manufacturer
+price
+weight_net
+weight_gross
+dimensions
+
+Создать класс Purchase, содержащий данные о количестве и типе покупаемого товара, стоимости каждой позиции, общий вес и общую стоимость.
+Класс Receipt, на вход принимает Purchase и формирует чек.
+
+Класс Stock.
+На первое время:
+product: quantity
+produced_on
+expires_by
+
+
+
