@@ -1,6 +1,6 @@
 #include "Utilities.h"
 
-string moneyToString(size_t money) {
+string MoneyToString(size_t money) {
 	int millions = money / 100000000;
 	int thousands = money / 100000 - millions * 1000;
 	int singles = money / 100 - thousands * 1000 - millions * 1000000;
@@ -43,10 +43,10 @@ string moneyToString(size_t money) {
 	return result;
 }
 
-string weightToString(size_t weight)
+string WeightToString(size_t weight)
 {
 	unsigned int kilos = weight / 1000;
-	unsigned int grams = weight % 100;
+	unsigned int grams = weight % 1000;
 
 	string result = to_string(kilos) + ".";
 
@@ -62,7 +62,7 @@ string weightToString(size_t weight)
 	return result;
 }
 
-string tmToString(tm date, bool show_time)
+string TmToString(tm date, bool show_time)
 {
 	string result = "";
 
@@ -94,6 +94,29 @@ string tmToString(tm date, bool show_time)
 	}
 
 	return result;
+}
+
+string SetStringWidth(string input, size_t length, char filler) 
+{
+	string result = input;
+	size_t to_add = length - input.size();
+	if (to_add > 0)	{
+		for (size_t i = 0; i < to_add; ++i)	{
+			result.push_back(filler);
+		}
+		
+	}
+	return result;
+}
+
+string GetQuantityAsString(double quantity, bool soldByWeight)
+{
+	if (soldByWeight) {
+		return WeightToString(quantity * 1000);
+	}
+	else {
+		return to_string((int)quantity);
+	}
 }
 
 // Output operator <<

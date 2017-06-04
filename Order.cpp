@@ -12,25 +12,25 @@ Order::Order()
 	paid_amount = 0;
 	is_closed = false;
 
-	cout << "New order created at: " << this->getCreationTime() << "\n";
+	clog << "New order created at: " << GetCreationTime() << "\n";
 }
 
-size_t Order::getNumberOfProducts()
+size_t Order::GetNumberOfProducts()
 {
-	return productsInOrder.size();
+	return m_ProductsInOrder.size();
 }
 
-string Order::getCreationTime()
+string Order::GetCreationTime()
 {
-	return tmToString(created_at, true);
+	return TmToString(created_at, true);
 }
 
-bool Order::isClosed()
+bool Order::IsClosed()
 {
 	return is_closed;
 }
 
-string Order::getClosedTime()
+string Order::GetClosedTime()
 {
-	return tmToString(closed_at, true);
+	return TmToString(closed_at, true);
 }
