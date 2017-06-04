@@ -3,15 +3,17 @@
 #include <utility>
 using namespace std;
 #include "Product.h"
+#include "Utilities.h"
 
 class Stock 
 {
 private:
-	/*struct StockLine {
+	struct StockLine {
 		Product product;
 		double available;
-	};*/
-	map<size_t, pair<Product, double>> m_ProductsInStock;  // stores product_id as a key and a pair of the product itself and available quantitiy quantity
+		StockLine(Product product, double quantity);
+	};
+	map<size_t, StockLine> m_ProductsInStock;  // stores product_id as a key, product itself and available quantitiy 
 
 public:
 	bool IsInStock(Product product);      // checks if the product is in stock with the quantity > 0

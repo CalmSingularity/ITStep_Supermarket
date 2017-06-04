@@ -1,5 +1,10 @@
 #include "Stock.h"
 
+Stock::StockLine::StockLine(Product product, double quantity) :
+	product(product),
+	available(quantity)
+{}
+
 bool Stock::IsInStock(Product product)
 {
 	if (m_ProductsInStock.find(product.product_id) == m_ProductsInStock.end()) {
@@ -12,7 +17,7 @@ bool Stock::IsInStock(Product product)
 
 double inline Stock::GetQuantity(Product product)
 {
-	return m_ProductsInStock.at(product.product_id).second;
+	return m_ProductsInStock.at(product.product_id).available;
 }
 
 bool Stock::AddProduct(Product new_product)
@@ -22,7 +27,8 @@ bool Stock::AddProduct(Product new_product)
 		return false;
 	}
 
-	m_ProductsInStock.insert(make_pair(new_product.product_id, make_pair(new_product, 0)));
+	StockLine stockline(new_product, 0);
+	m_ProductsInStock.insert(make_pair(new_product.product_id, stockline));
 	clog << "New product " << new_product.GetIdName() << " is added to stock with 0 quantity\n";
 
 	return true;
@@ -42,7 +48,7 @@ bool Stock::ChangeQuantity(Product product, double delta)
 		return false;
 	}
 
-	m_ProductsInStock.at(product.product_id).second += delta;
+	m_ProductsInStock.at(product.product_id).available += delta;
 	clog << "Changed quantity of " << product.GetIdName() << " by " << delta << ". New quantity = "
 		    << GetQuantity(product) << "\n";
 	return true;
@@ -66,16 +72,15 @@ string Stock::GetProductInStock(Product product)
 string Stock::GetAllProductsInStock()
 {
 	string result = "Product ID   Product Name         Available Qnt\n";
-	//Product* product;
-	//double quantity;
 	for (auto it = m_ProductsInStock.begin(); it != m_ProductsInStock.end(); ++it) {
-		//quantity = it->second.second;
-		if (it->second.second > 0.0000001) {
+		if (it->second.available > 0.0000001) {
 			result += 
-				SetStringWidth(to_string(it->second.first.product_id), 12) + " " +
-				SetStringWidth(it->second.first.product_name, 20) + " " +
-				SetStringWidth(GetQuantityAsString(it->second.second, it->second.first.soldByWeight), 10) + "\n";
+				SetStringWidth(to_string(it->second.product.product_id), 12) + " " +
+				SetStringWidth(it->second.product.product_name, 20) + " " +
+				SetStringWidth(GetQuantityAsString(it->second.available, it->second.product.soldByWeight), 10) + "\n";
 		}
 	}
 	return result;
 }
+
+

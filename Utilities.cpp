@@ -1,5 +1,6 @@
 #include "Utilities.h"
 
+
 string MoneyToString(size_t money) {
 	int millions = money / 100000000;
 	int thousands = money / 100000 - millions * 1000;
@@ -119,25 +120,8 @@ string GetQuantityAsString(double quantity, bool soldByWeight)
 	}
 }
 
-// Output operator <<
-//std::ostream& operator << (std::ostream& out, Product& prod) {
-//	out << "Code:         " << to_string(prod.product_code) << "\n";
-//	out << "Name:         " << prod.product_name << "\n";
-//	out << "Manufacturer: " << prod.manufacturer << "\n";
-//	out << "Unit price:   ";
-//	if ((prod.unit_price / 100000) > 0)
-//	{
-//		out << prod.unit_price / 100000 << " " << setw(3) << setfill('0') << (prod.unit_price % 100000) / 100;
-//	}
-//	else {
-//		out << prod.unit_price / 100;
-//	}
-//	out << "." << setw(2) << setfill('0') << prod.unit_price % 100 << " RUB\n";
-//	
-//	
-//	
-//	
-//	out << "\n";
-//	
-//	return out;
-//}
+
+//ProductQuantity::ProductQuantity(Product product, double quantity) :
+//	product(product),
+//	available(quantity)
+//{}
