@@ -5,14 +5,20 @@ using namespace std;
 
 Order::Order()
 {	
-	time_t current_time = time(NULL);
-	created_at = *localtime(&current_time);
-	total_weight = 0;
-	total_amount = 0;
-	paid_amount = 0;
-	is_closed = false;
+	time_t currentTime = time(NULL);
+	createdAt = *localtime(&currentTime);
+	totalWeight = 0;
+	totalCentAmount = 0;
+	paidCentAmount = 0;
+	isClosed = false;
 
 	clog << "New order created at: " << GetCreationTime() << "\n";
+}
+
+bool Order::AddProduct(Product product, size_t quantityToAdd)
+{
+
+	return true;
 }
 
 size_t Order::GetNumberOfProducts()
@@ -22,15 +28,20 @@ size_t Order::GetNumberOfProducts()
 
 string Order::GetCreationTime()
 {
-	return TmToString(created_at, true);
+	return TmToString(createdAt, true);
 }
 
 bool Order::IsClosed()
 {
-	return is_closed;
+	return isClosed;
 }
 
 string Order::GetClosedTime()
 {
-	return TmToString(closed_at, true);
+	return TmToString(closedAt, true);
 }
+
+Order::OrderLine::OrderLine(Product product, double quantity):
+	product(product),
+	quantity(quantity)
+{}

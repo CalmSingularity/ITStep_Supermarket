@@ -2,10 +2,10 @@
 
 
 string MoneyToString(size_t money) {
-	int millions = money / 100000000;
-	int thousands = money / 100000 - millions * 1000;
-	int singles = money / 100 - thousands * 1000 - millions * 1000000;
-	int cents = money % 100;
+	size_t millions = money / 100000000;
+	size_t thousands = money / 100000 - millions * 1000;
+	size_t singles = money / 100 - thousands * 1000 - millions * 1000000;
+	size_t cents = money % 100;
 
 	string result = "";
 
@@ -46,8 +46,8 @@ string MoneyToString(size_t money) {
 
 string WeightToString(size_t weight)
 {
-	unsigned int kilos = weight / 1000;
-	unsigned int grams = weight % 1000;
+	size_t kilos = weight / 1000;
+	size_t grams = weight % 1000;
 
 	string result = to_string(kilos) + ".";
 

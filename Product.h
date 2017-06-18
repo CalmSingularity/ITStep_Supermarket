@@ -8,30 +8,30 @@ using namespace std;
 class Product 
 {
 private:
-	size_t product_id;
-	string product_name;
-	string manufacturer; // name of the manufacturer of the product
-	size_t unit_price;   // price of one item of the product *100 (including cents/copeiks)
-	size_t weight_net;   // net weight of one item of the product in gramms
-	size_t weight_gross; // gross weight of one item of the product in gramms
-	bool soldByWeight;   // shows if the product is sold by weight (without fixed package)
+	size_t productCode;
+	string productName;
+	string manufacturer;  // name of the manufacturer of the product
+	size_t unitCentPrice; // price of one item of the product WITH cents/copeiks (*100)
+	size_t weightNet;     // net weight of one item of the product in gramms
+	size_t weightGross;   // gross weight of one item of the product in gramms
+	bool soldByWeight;    // shows if the product is sold by weight (without fixed package)
 	size_t width, height, length;   // dimensions in millimiters; initialized as 0
-	tm production_date;      // date of manufacturing
-	tm expiration_date;       // expiry date
+	tm productionDate;    // date of manufacturing
+	tm expirationDate;    // expiry date
 
 public:
 	Product(   // constructor
-		size_t product_id,
-		string product_name, 
-		size_t unit_price, 
-		size_t weight_net, 
+		size_t productCode,
+		string productName, 
+		size_t unitCentPrice, 
+		size_t weightNet, 
 		bool soldByWeight); 
 	void SetManufacturer(string manufacturer);
-	void SetWeightGross(size_t weight_gross);
+	void SetWeightGross(size_t weightGross);
 	void SetDimensions(size_t width, size_t height, size_t length);
-	size_t GetId();  // returns product_id
+	size_t GetCode();  // returns productCode
 	string GetFullDetails();  // returns all fields of an object (full details of a product)
-	string GetIdName();  // returns product_id and product_name as a string looking like '(id) "name"'
+	string GetCodeName();  // returns product_id and product_name as a string looking like '(code) "name"'
 	size_t GetWidth();
 	size_t GetHeight();
 	size_t GetLength();
@@ -41,6 +41,6 @@ public:
 	string GetExpirationDate();  // returns a string "DD/MM/YYYY"
 	bool IsExpired();
 
-	friend class Stock;
+	friend class StockDB;
 };
 

@@ -1,16 +1,16 @@
 #include "Product.h"
 
 Product::Product(
-	size_t product_id,
-	string product_name, 
-	size_t unit_price,
-	size_t weight_net,
+	size_t productCode,
+	string productName,
+	size_t unitCentPrice,
+	size_t weightNet,
 	bool soldByWeight)
 	:
-	product_id(product_id),
-	product_name(product_name),
-	unit_price(unit_price),
-	weight_net(weight_net),
+	productCode(productCode),
+	productName(productName),
+	unitCentPrice(unitCentPrice),
+	weightNet(weightNet),
 	soldByWeight(soldByWeight)
 {
 	manufacturer = "";
@@ -18,10 +18,10 @@ Product::Product(
 	height = 0;
 	length = 0;	
 	if (soldByWeight) {
-		weight_gross = weight_net;
+		weightGross = weightNet;
 	} 
 	else {
-		weight_gross = 0;
+		weightGross = 0;
 	}
 
 	/*clog << "New product added:\n" << 
@@ -41,7 +41,7 @@ void Product::SetManufacturer(string manufacturer)
 
 void Product::SetWeightGross(size_t weight_gross)
 {
-	this->weight_gross = weight_gross;
+	this->weightGross = weight_gross;
 }
 
 void Product::SetDimensions(size_t width, size_t height, size_t length)
@@ -51,26 +51,26 @@ void Product::SetDimensions(size_t width, size_t height, size_t length)
 	this->length = length;
 }
 
-size_t Product::GetId()
+size_t Product::GetCode()
 {
-	return product_id;
+	return productCode;
 }
 
 string Product::GetFullDetails()
 {
 	string result =
-		"Code:               " + to_string(product_id) + "\n" +
-		"Name:               " + product_name + "\n" +
+		"Code:               " + to_string(productCode) + "\n" +
+		"Name:               " + productName + "\n" +
 		"Manufacturer:       " + manufacturer + "\n" +
-		"Unit price:         " + MoneyToString(unit_price) + " RUB\n" +
-		"Net weight:         " + WeightToString(weight_net) + " kg\n";
+		"Unit price:         " + MoneyToString(unitCentPrice) + " RUB\n" +
+		"Net weight:         " + WeightToString(weightNet) + " kg\n";
 	if (soldByWeight) {
 		result += 
 			"Sold by weight:     Yes\n";
 	} 
 	else {
 		result +=
-			"Gross weight:       " + WeightToString(weight_gross) + " kg\n" +
+			"Gross weight:       " + WeightToString(weightGross) + " kg\n" +
 			"Dimensions (WxHxL): " + to_string(width) + " mm x "
 			+ to_string(height) + " mm x " + to_string(length) + " mm\n";
 	}
@@ -84,9 +84,9 @@ string Product::GetFullDetails()
 	return result;
 }
 
-string Product::GetIdName()
+string Product::GetCodeName()
 {
-	return "(" + to_string(product_id) + ") \"" + product_name + "\"";
+	return "(" + to_string(productCode) + ") \"" + productName + "\"";
 }
 
 size_t Product::GetWidth()
@@ -106,26 +106,26 @@ size_t Product::GetLength()
 
 void Product::SetProductionDate(int prod_mday, int prod_month, int prod_year) 
 {
-	production_date.tm_mday = prod_mday;
-	production_date.tm_mon = prod_month - 1;
-	production_date.tm_year = prod_year - 1900;
+	productionDate.tm_mday = prod_mday;
+	productionDate.tm_mon = prod_month - 1;
+	productionDate.tm_year = prod_year - 1900;
 }
 
 void Product::SetExpirationDate(int exp_mday, int exp_mon, int exp_year)
 {
-	expiration_date.tm_mday = exp_mday;
-	expiration_date.tm_mon = exp_mon - 1;
-	expiration_date.tm_year = exp_year - 1900;
+	expirationDate.tm_mday = exp_mday;
+	expirationDate.tm_mon = exp_mon - 1;
+	expirationDate.tm_year = exp_year - 1900;
 }
 
 string Product::GetProductionDate() 
 {
-	return TmToString(production_date);
+	return TmToString(productionDate);
 }
 
 string Product::GetExpirationDate()
 {
-	return TmToString(expiration_date);;
+	return TmToString(expirationDate);;
 }
 
 bool Product::IsExpired()
