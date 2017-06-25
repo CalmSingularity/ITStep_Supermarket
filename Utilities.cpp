@@ -44,6 +44,24 @@ string MoneyToString(size_t money) {
 	return result;
 }
 
+string WeightToString(size_t weight)
+{
+	size_t kilos = weight / 1000;
+	size_t grams = weight % 1000;
+
+	string result = to_string(kilos) + ".";
+
+	if (grams < 100) {
+		if (grams < 10) {
+			result += "00";
+		}
+		else {
+			result += "0";
+		}
+	}
+	result += to_string(grams);
+	return result;
+}
 
 string TmToString(tm date, bool show_time)
 {
@@ -91,33 +109,3 @@ string SetStringWidth(string input, size_t length, char filler)
 	}
 	return result;
 }
-
-string QuantityToString(size_t quantity, bool soldByWeight)
-{
-	if (soldByWeight) {
-		size_t kilos = quantity / 1000;
-		size_t grams = quantity % 1000;
-
-		string result = to_string(kilos) + ".";
-
-		if (grams < 100) {
-			if (grams < 10) {
-				result += "00";
-			}
-			else {
-				result += "0";
-			}
-		}
-		result += to_string(grams);
-		return result;
-	}
-	else {
-		return to_string((int)quantity);
-	}
-}
-
-
-//ProductQuantity::ProductQuantity(Product product, double quantity) :
-//	product(product),
-//	available(quantity)
-//{}

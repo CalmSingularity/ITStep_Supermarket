@@ -8,14 +8,14 @@ StockDB::StockRecord::StockRecord(Product product, size_t availableQnt) :
 bool StockDB::CreateStockRecord(Product product, size_t availableQnt)
 {
 	if (IsInStock(product.GetCode())) {
-		clog << "Product " << product.GetCodeName() << " is already in stock!\n";
+		clog << "Product " << product.GetCodeAndName() << " is already in stock!\n";
 		return false;
 	}
 
 	StockRecord stockRecord(product, availableQnt);
 	if (m_ProductsInStock.insert(make_pair(product.productCode, stockRecord)).second) {
-		clog << "New product " << product.GetCodeName() << " is added to the stock with quantity "
-			<< QuantityToString(stockRecord.availableQnt, stockRecord.product.soldByWeight) << "\n";
+		clog << "New product " << product.GetCodeAndName() << " is added to the stock with quantity "
+			<< WeightToString(stockRecord.availableQnt) << "\n";
 		return true;
 	}
 	else {
@@ -60,17 +60,16 @@ bool StockDB::ChangeAvailableQnt(size_t productCode, long long delta)
 
 	StockDB::StockRecord stockRecord = ReadStockRecord(productCode);
 	if (((long long)stockRecord.availableQnt + delta) < 0) {
-		cerr << "Cannot change quantity of " << stockRecord.product.GetCodeName() << " by " << delta
+		cerr << "Cannot change quantity of " << stockRecord.product.GetCodeAndName() << " by " << delta
 			<< ", because the current quantity is " 
-			<< QuantityToString(stockRecord.availableQnt, stockRecord.product.soldByWeight) << "!\n";
+			<< WeightToString(stockRecord.availableQnt) << "!\n";
 		return false;
 	}
 	else {
 		m_ProductsInStock.at(productCode).availableQnt += delta;
 		stockRecord = ReadStockRecord(productCode);
-		clog << "Changed quantity of " << stockRecord.product.GetCodeName() << " by " 
-			<< QuantityToString(delta, stockRecord.product.soldByWeight) << ". New quantity = "
-			<< QuantityToString(stockRecord.availableQnt, stockRecord.product.soldByWeight) << "\n";
+		clog << "Changed quantity of " << stockRecord.product.GetCodeAndName() << " by " << WeightToString(delta) 
+			<< ". New quantity = " << WeightToString(stockRecord.availableQnt) << "\n";
 		return true;
 	}
 }
@@ -98,7 +97,7 @@ string StockDB::GetProductInStock(size_t productCode)
 		return
 			SetStringWidth(to_string(productCode), 12) + " " +
 			SetStringWidth(stockRecord.product.productName, 20) + " " +
-			SetStringWidth(QuantityToString(stockRecord.availableQnt, stockRecord.product.soldByWeight), 10) + "\n";
+			SetStringWidth(WeightToString(stockRecord.availableQnt), 7) + "\n";
 	}
 	else {
 		return "";
@@ -113,7 +112,7 @@ string StockDB::GetAllProductsInStock()
 			result += 
 				SetStringWidth(to_string(it.second.product.productCode), 12) + " " +
 				SetStringWidth(it.second.product.productName, 20) + " " +
-				SetStringWidth(QuantityToString(it.second.availableQnt, it.second.product.soldByWeight), 10) + "\n";
+				SetStringWidth(WeightToString(it.second.availableQnt), 7) + "\n";
 		}
 	}
 	return result;

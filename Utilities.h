@@ -6,9 +6,8 @@ using namespace std;
 /* Takes money value *100 (including cents/copeiks) and converts it into a string formatted as 1 234.56 */
 string MoneyToString(size_t money);
 
-/* If soldByWeight, takes quantity in grams and returns it as a string formatted as 12.345 (kilos.grams)
- * Otherwise, simply converts integer to string */
-string QuantityToString(size_t quantity, bool soldByWeight = true); 
+/* Converts weight into a string formatted as 12.345 (kilos.grams) */
+string WeightToString(size_t weight); 
 
 /* Takes date/time in a form of tm structure and returns a string with the date formatted as DD/MM/YYYY */
 string TmToString(tm date, bool showTime = false);

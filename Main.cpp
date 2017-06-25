@@ -8,26 +8,14 @@ using namespace std;
 
 int main() {
 	try {
-		Product Cucumbers(1002577, "Cucumbers", 21055, 1000, true);
-		Cucumbers.SetManufacturer("OOO Greenhouse");
-		Cucumbers.SetProductionDate(25, 5, 2017);
-		Cucumbers.SetExpirationDate(01, 6, 2017);
+		Product Cucumbers(1002577, "Cucumbers", 21055, "OOO Greenhouse", 1000, 1010);
 		cout << "New product created:\n" << Cucumbers.GetFullDetails() << endl;
 
-		Product Tomatoes(1002593, "Tomatoes", 33710, 1000, true);
-		Tomatoes.SetManufacturer("OOO Greenhouse");
-		Tomatoes.SetProductionDate(25, 5, 2017);
-		Tomatoes.SetExpirationDate(31, 5, 2017);
+		Product Tomatoes(1002593, "Tomatoes", 33710, "OOO Greenhouse", 1000, 1010);
 		cout << "New product created:\n" << Tomatoes.GetFullDetails() << endl;
 
-		Product CondencedMilk(1006608, "Condenced Milk", 11000, 250, false);
-		CondencedMilk.SetManufacturer("IP Burenka");
-		CondencedMilk.SetWeightGross(265);
-		CondencedMilk.SetProductionDate(1, 4, 2017);
-		CondencedMilk.SetExpirationDate(31, 3, 2018);
-		CondencedMilk.SetDimensions(100, 150, 100);
+		Product CondencedMilk(1006608, "Condenced Milk", 11000, "IP Burenka", 250, 265, 50, 100, 50);
 		cout << "New product created:\n" << CondencedMilk.GetFullDetails() << endl;
-
 
 		StockDB mainStockDB;
 		mainStockDB.CreateStockRecord(Cucumbers, 12000);
