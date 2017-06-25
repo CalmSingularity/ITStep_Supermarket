@@ -15,7 +15,13 @@ Order::Order()
 	clog << "New order created at: " << GetCreationTime() << "\n";
 }
 
-bool Order::AddProduct(Product product, size_t quantityToAdd)
+Order::OrderLine::OrderLine(Product product, size_t qnt, size_t price) :
+	product(product),
+	qnt(qnt),
+	price(price)
+{}
+
+bool Order::AddProduct(size_t productCode, size_t quantityToAdd)
 {
 
 	return true;
@@ -41,7 +47,3 @@ string Order::GetClosedTime()
 	return TmToString(closedAt, true);
 }
 
-Order::OrderLine::OrderLine(Product product, double quantity):
-	product(product),
-	quantity(quantity)
-{}

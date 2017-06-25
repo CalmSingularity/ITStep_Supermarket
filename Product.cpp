@@ -24,14 +24,14 @@ Product::Product(
 		weightGross = 0;
 	}
 
-	/*clog << "New product added:\n" << 
-		"Code:           " << to_string(product_id) << "\n" <<
-		"Name:           " << product_name << "\n" <<
-		"Unit price:     " << MoneyToString(unit_price) << " RUB\n" <<
-		"Net weight:     " << WeightToString(weight_net) << " kg\n";
-	if (soldByWeight) {
-		clog <<	"Sold by weight: Yes\n";
-	}*/
+	//clog << "New product added:\n" << 
+	//	"Code:           " << to_string(product_id) << "\n" <<
+	//	"Name:           " << product_name << "\n" <<
+	//	"Unit price:     " << MoneyToString(unit_price) << " RUB\n" <<
+	//	"Net weight:     " << WeightToString(weight_net) << " kg\n";
+	//if (soldByWeight) {
+	//	clog <<	"Sold by weight: Yes\n";
+	//}
 }
 
 void Product::SetManufacturer(string manufacturer) 
@@ -63,14 +63,14 @@ string Product::GetFullDetails()
 		"Name:               " + productName + "\n" +
 		"Manufacturer:       " + manufacturer + "\n" +
 		"Unit price:         " + MoneyToString(unitCentPrice) + " RUB\n" +
-		"Net weight:         " + WeightToString(weightNet) + " kg\n";
+		"Net weight:         " + QuantityToString(weightNet) + " kg\n";
 	if (soldByWeight) {
 		result += 
 			"Sold by weight:     Yes\n";
 	} 
 	else {
 		result +=
-			"Gross weight:       " + WeightToString(weightGross) + " kg\n" +
+			"Gross weight:       " + QuantityToString(weightGross) + " kg\n" +
 			"Dimensions (WxHxL): " + to_string(width) + " mm x "
 			+ to_string(height) + " mm x " + to_string(length) + " mm\n";
 	}
@@ -79,7 +79,7 @@ string Product::GetFullDetails()
 		"Expires on:         " + GetExpirationDate() + "\n";
 	
 	if (IsExpired())
-		result += "EXPIRED!\n";
+		result += "PRODUCT EXPIRED!\n";
 	
 	return result;
 }

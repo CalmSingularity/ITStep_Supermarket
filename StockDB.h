@@ -10,25 +10,39 @@ class StockDB
 private:
 	struct StockRecord {
 		Product product;
-		double available;
-		StockRecord(Product product, double quantity);
+		size_t availableQnt;
+		StockRecord(Product product, size_t availableQnt);
 	};
-	map<size_t, StockRecord> m_ProductsInStock;  // stores productCode as a key, the product itself and available quantity 
+	map<size_t, StockRecord> m_ProductsInStock;  // stores productCode as a key, the product itself and available quantity in units or gramms
 
 public:
-	bool AddProduct(Product new_product); // adds a new product to the stock with 0 quantity
-	bool IsInStock(Product product);      // checks if the product is in stock with the quantity > 0
-	double GetQuantity(Product product);  // returns the available quantity of the product
-	bool ChangeQuantity(Product product, double delta);  // change available quantity of product in stock by delta
 
-	string GetProductInStock(Product product);   // returns a string with product_id, product_name, available quantity
-	string GetAllProductsInStock(); // returns a string for all products available in stock with quantity > 0
-						            // one line for each product with product_id, product_name, available quantity
+	/* Adds a new product to the stock with quantity. Returns true if successful. 
+	 * If the product with such productCode already extists in the stock, does nothing and returns false.*/
+	bool CreateStockRecord(Product product, size_t availableQnt = 0);
+	
+	/* Checks if the product is in stock */
+	bool IsInStock(size_t productCode);
 
-	//bool IsAvailableEnough(Product product, double quantity); // checks if there is sufficient quantity of product in stock which is not reserved
-	//size_t Reserve(Product product, double quantity); // reserves the specified quantity of product (usually prior to release from stock); returns id of the reservation or 0 if not successful
-	//bool CancelReservation(size_t reservationId);     // cancels the reservation, doesn't affect the stock
-	//bool ReleaseProduct(Product product, double quantity);  // releases the specified quantity of product from stock (for sale, disposal, etc.)
-	//bool ReleaseReservation(size_t reserve);  // releases the specified reserve from stock (usually for sale and dispatch)
+	/* Looks for StockRecord with productCode in the stock and returns it fi successful.
+	 * If productCode is not found (product is not in stock), returns StockRecord with dummyProduct where ProductCode == 0 and quantity == 0. */
+	StockRecord ReadStockRecord(size_t productCode);
 
+	/* Returns the available quantity of the product or 0 if it's not in stock */
+	size_t GetAvailableQnt(size_t productCode); 
+
+	/* Updates StockRecord by changing available quantity of product in the stock by delta. Returns true if successful. */
+	bool ChangeAvailableQnt(size_t productCode, long long delta);
+
+	/* Looks for StockRecord with productCode in the stock and deletes it. Returns true if successful. */
+	bool DeleteStockRecord(size_t productCode);
+
+	//bool UpdateStockRecord();
+
+	/* Returns a string with productCode, productName and available quantity */
+	string GetProductInStock(size_t productCode);
+
+	/* Returns a string with all products available in stock with quantity > 0 :
+	 * One line stands for each product with productCode, productName, available quantity. */
+	string GetAllProductsInStock(); 
 };

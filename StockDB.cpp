@@ -1,13 +1,32 @@
 #include "StockDB.h"
 
-StockDB::StockRecord::StockRecord(Product product, double quantity) :
+StockDB::StockRecord::StockRecord(Product product, size_t availableQnt) :
 	product(product),
-	available(quantity)
+	availableQnt(availableQnt)
 {}
 
-bool StockDB::IsInStock(Product product)
+bool StockDB::CreateStockRecord(Product product, size_t availableQnt)
 {
-	if (m_ProductsInStock.find(product.productCode) == m_ProductsInStock.end()) {
+	if (IsInStock(product.GetCode())) {
+		clog << "Product " << product.GetCodeName() << " is already in stock!\n";
+		return false;
+	}
+
+	StockRecord stockRecord(product, availableQnt);
+	if (m_ProductsInStock.insert(make_pair(product.productCode, stockRecord)).second) {
+		clog << "New product " << product.GetCodeName() << " is added to the stock with quantity "
+			<< QuantityToString(stockRecord.availableQnt, stockRecord.product.soldByWeight) << "\n";
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool StockDB::IsInStock(size_t productCode)
+{
+	if (m_ProductsInStock.find(productCode) == m_ProductsInStock.end()) {
+		cerr << "Product with code " << productCode << " is not in stock!\n";
 		return false;
 	}
 	else {
@@ -15,77 +34,86 @@ bool StockDB::IsInStock(Product product)
 	}
 }
 
-double inline StockDB::GetQuantity(Product product)
+StockDB::StockRecord StockDB::ReadStockRecord(size_t productCode)
 {
-	if (!IsInStock(product)) {
-		cerr << product.GetCodeName() << " is not in stock!\n";
-		return 0;
+	if (!IsInStock(productCode)) {
+		Product dummyProduct(0, "", 0, 0, false);
+		StockRecord dummyRecord(dummyProduct, 0);
+		return dummyRecord;
 	}
-	return m_ProductsInStock.at(product.productCode).available;
+	else {
+		return m_ProductsInStock.at(productCode);
+	}
 }
 
-bool StockDB::AddProduct(Product new_product)
+size_t StockDB::GetAvailableQnt(size_t productCode)
 {
-	if (this->IsInStock(new_product)) {
-		clog << "Product " << new_product.GetCodeName() << " is already in stock!\n";
+	StockRecord stockRecord = ReadStockRecord(productCode);
+	return stockRecord.availableQnt;
+}
+
+bool StockDB::ChangeAvailableQnt(size_t productCode, long long delta)
+{
+	if (!IsInStock(productCode)) {
 		return false;
 	}
 
-	StockRecord stockline(new_product, 0);
-	if (m_ProductsInStock.insert(make_pair(new_product.productCode, stockline)).second) {
-		clog << "New product " << new_product.GetCodeName() << " is added to stock with 0 quantity\n";
+	StockDB::StockRecord stockRecord = ReadStockRecord(productCode);
+	if (((long long)stockRecord.availableQnt + delta) < 0) {
+		cerr << "Cannot change quantity of " << stockRecord.product.GetCodeName() << " by " << delta
+			<< ", because the current quantity is " 
+			<< QuantityToString(stockRecord.availableQnt, stockRecord.product.soldByWeight) << "!\n";
+		return false;
+	}
+	else {
+		m_ProductsInStock.at(productCode).availableQnt += delta;
+		stockRecord = ReadStockRecord(productCode);
+		clog << "Changed quantity of " << stockRecord.product.GetCodeName() << " by " 
+			<< QuantityToString(delta, stockRecord.product.soldByWeight) << ". New quantity = "
+			<< QuantityToString(stockRecord.availableQnt, stockRecord.product.soldByWeight) << "\n";
+		return true;
+	}
+}
+
+bool StockDB::DeleteStockRecord(size_t productCode)
+{
+	if (!IsInStock(productCode)) {
+		return false;
+	}
+
+	size_t nErased = m_ProductsInStock.erase(productCode);
+	if (nErased >= 1) {
+		clog << "Removed product with code " << productCode << " from the stock. " << nErased << " record(s) removed.\n";
 		return true;
 	}
 	else {
 		return false;
 	}
-	
 }
 
-bool StockDB::ChangeQuantity(Product product, double delta)
+string StockDB::GetProductInStock(size_t productCode)
 {
-	if (!IsInStock(product)) {
-		cerr << product.GetCodeName() << " is not in stock!\n";
-		return false;
-	}
-
-	double current_quantity = GetQuantity(product);
-	if ((current_quantity + delta) < 0) {
-		cerr << "Cannot change quantity of " << product.GetCodeName() << " by " << delta
-			<< ", because the current quantity is " << current_quantity << "!\n";
-		return false;
-	}
-
-	m_ProductsInStock.at(product.productCode).available += delta;
-	clog << "Changed quantity of " << product.GetCodeName() << " by " << delta << ". New quantity = "
-		    << GetQuantity(product) << "\n";
-	return true;
-	
-}
-
-string StockDB::GetProductInStock(Product product)
-{
-	if (IsInStock(product)) {
+	if (IsInStock(productCode)) {
+		StockDB::StockRecord stockRecord = ReadStockRecord(productCode);
 		return
-			SetStringWidth(to_string(product.productCode), 12) + " " +
-			SetStringWidth(product.productName, 20) + " " +
-			SetStringWidth(GetQuantityAsString(GetQuantity(product), product.soldByWeight), 10) + "\n";
+			SetStringWidth(to_string(productCode), 12) + " " +
+			SetStringWidth(stockRecord.product.productName, 20) + " " +
+			SetStringWidth(QuantityToString(stockRecord.availableQnt, stockRecord.product.soldByWeight), 10) + "\n";
 	}
 	else {
-		cerr << "Product " << product.GetCodeName() << " is not in stock!\n";
 		return "";
 	}
 }
 
 string StockDB::GetAllProductsInStock()
 {
-	string result = "Product ID   Product Name         Available Qnty\n";
-	for (auto it = m_ProductsInStock.begin(); it != m_ProductsInStock.end(); ++it) {
-		if (it->second.available > 0.0000001) {
+	string result = "Product ID   Product Name         Available Qnt\n";
+	for (auto it: m_ProductsInStock) {
+		if (it.second.availableQnt > 0) {
 			result += 
-				SetStringWidth(to_string(it->second.product.productCode), 12) + " " +
-				SetStringWidth(it->second.product.productName, 20) + " " +
-				SetStringWidth(GetQuantityAsString(it->second.available, it->second.product.soldByWeight), 10) + "\n";
+				SetStringWidth(to_string(it.second.product.productCode), 12) + " " +
+				SetStringWidth(it.second.product.productName, 20) + " " +
+				SetStringWidth(QuantityToString(it.second.availableQnt, it.second.product.soldByWeight), 10) + "\n";
 		}
 	}
 	return result;
