@@ -1,5 +1,6 @@
 #include "StockDB.h"
 
+
 StockDB::StockRecord::StockRecord(Product product, size_t availableQnt) :
 	product(product),
 	availableQnt(availableQnt)
@@ -95,7 +96,7 @@ string StockDB::GetProductInStock(size_t productCode)
 	if (IsInStock(productCode)) {
 		StockDB::StockRecord stockRecord = ReadStockRecord(productCode);
 		return
-			SetStringWidth(to_string(productCode), 12) + " " +
+			SetStringWidth(to_string(productCode), 13) + " " +
 			SetStringWidth(stockRecord.product.productName, 20) + " " +
 			SetStringWidth(WeightToString(stockRecord.availableQnt), 7) + "\n";
 	}
@@ -106,11 +107,11 @@ string StockDB::GetProductInStock(size_t productCode)
 
 string StockDB::GetAllProductsInStock()
 {
-	string result = "Product ID   Product Name         Available Qnt\n";
+	string result = "Product Code  Product Name         Available Qnt\n";
 	for (auto it: m_ProductsInStock) {
 		if (it.second.availableQnt > 0) {
 			result += 
-				SetStringWidth(to_string(it.second.product.productCode), 12) + " " +
+				SetStringWidth(to_string(it.second.product.productCode), 13) + " " +
 				SetStringWidth(it.second.product.productName, 20) + " " +
 				SetStringWidth(WeightToString(it.second.availableQnt), 7) + "\n";
 		}

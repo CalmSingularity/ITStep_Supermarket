@@ -5,26 +5,34 @@ using namespace std;
 #include "Product.h"
 #include "Utilities.h"
 
+
 class StockDB 
 {
+
 private:
-	struct StockRecord {
+
+	struct StockRecord  // individual record in the stock database
+	{
 		Product product;
 		size_t availableQnt;
-		StockRecord(Product product, size_t availableQnt);
+		StockRecord(Product product, size_t availableQnt);  // constructor
 	};
-	map<size_t, StockRecord> m_ProductsInStock;  // stores productCode as a key, the product itself and available quantity in units or gramms
+
+	/* The following map stores productCode as a key. No duplicates allowed.
+	 * StockRecord as a value stores the product itself (Product object) and available quantity in units. */
+	map<size_t, StockRecord> m_ProductsInStock;  
+
 
 public:
 
-	/* Adds a new product to the stock with quantity. Returns true if successful. 
+	/* Adds a new product to the stock with quantity availableQnt. Returns true if successful. 
 	 * If the product with such productCode already extists in the stock, does nothing and returns false.*/
 	bool CreateStockRecord(Product product, size_t availableQnt = 0);
 	
 	/* Checks if the product is in stock */
 	bool IsInStock(size_t productCode);
 
-	/* Looks for StockRecord with productCode in the stock and returns it fi successful.
+	/* Looks for StockRecord with productCode in the stock and returns it if successful.
 	 * If productCode is not found (product is not in stock), returns StockRecord with dummyProduct where ProductCode == 0 and quantity == 0. */
 	StockRecord ReadStockRecord(size_t productCode);
 

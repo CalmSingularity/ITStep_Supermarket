@@ -9,6 +9,7 @@ string MoneyToString(size_t money) {
 
 	string result = "";
 
+	// Add heading zeros to thousands:
 	if (millions > 0) {
 		result = to_string(millions) + " ";
 		if (thousands < 100) {
@@ -41,8 +42,31 @@ string MoneyToString(size_t money) {
 
 	result += to_string(cents);
 
+/* TRY THIS
+	const int CENTS_DIGITS = 2;
+	size_t temp = money / 10 * CENTS_DIGITS;  // get rid of cents
+	size_t nDigits = 0;  
+	while (temp > 0) { 
+		// count the number of digits, excluding cents
+		++nDigits;
+		temp / 10;
+	}
+
+	string result = "";
+	for (i = nDigits - 1; i > 0; --i) {
+		string += to_string(money / ((10 * i) * (10 * CENTS_DIGITS)));
+		if (i % 3 == 0) {
+			string += " ";
+		}
+	}
+	string += to_string(money % 10);
+	string += ".";
+	string += to_string(money % (10 * CENTS_DIGITS));
+
+*/
 	return result;
 }
+
 
 string WeightToString(size_t weight)
 {
@@ -63,7 +87,7 @@ string WeightToString(size_t weight)
 	return result;
 }
 
-string TmToString(tm date, bool show_time)
+string TmToString(tm date, bool showTime)
 {
 	string result = "";
 
@@ -79,7 +103,7 @@ string TmToString(tm date, bool show_time)
 	
 	result += to_string(date.tm_year + 1900);
 
-	if (show_time) {
+	if (showTime) {
 		result += " ";
 		if (date.tm_hour < 10)
 			result += "0";

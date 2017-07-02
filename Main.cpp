@@ -6,8 +6,11 @@ using namespace std;
 #include "Utilities.h"
 #include "StockDB.h"
 
-int main() {
-	try {
+int main() 
+{
+	try 
+	{
+		// Create some products:
 		Product Cucumbers(1002577, "Cucumbers", 21055, "OOO Greenhouse", 1000, 1010);
 		cout << "New product created:\n" << Cucumbers.GetFullDetails() << endl;
 
@@ -17,14 +20,12 @@ int main() {
 		Product CondencedMilk(1006608, "Condenced Milk", 11000, "IP Burenka", 250, 265, 50, 100, 50);
 		cout << "New product created:\n" << CondencedMilk.GetFullDetails() << endl;
 
+		// Put those products into a new StockDB:
 		StockDB mainStockDB;
 		mainStockDB.CreateStockRecord(Cucumbers, 12000);
 		mainStockDB.CreateStockRecord(CondencedMilk);
-		mainStockDB.CreateStockRecord(CondencedMilk);
-		mainStockDB.ChangeAvailableQnt(Tomatoes.GetCode(), 10);
 		mainStockDB.CreateStockRecord(Tomatoes);
 		mainStockDB.ChangeAvailableQnt(Tomatoes.GetCode(), 5625);
-		mainStockDB.ChangeAvailableQnt(CondencedMilk.GetCode(), -3);
 		mainStockDB.ChangeAvailableQnt(CondencedMilk.GetCode(), 80);
 		cout << endl;
 
@@ -36,16 +37,17 @@ int main() {
 		cout << mainStockDB.GetAllProductsInStock();
 		cout << endl;
 
-		Order testPurchase;
+		Order testPurchase(mainStockDB);
 
-		if (testPurchase.IsClosed()) {
+		if (testPurchase.IsClosed()) 
+		{
 			cout << "Order is closed at " << testPurchase.GetClosedTime() << "\n";
 		}
 	}
-	catch (exception &exception) {
+	catch (exception &exception) 
+	{
 		cerr << "Standard exception: " << exception.what() << '\n';
 	}
 	
 	return 0;
 }
-

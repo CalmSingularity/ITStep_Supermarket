@@ -6,11 +6,12 @@ using namespace std;
 /* Takes money value *100 (including cents/copeiks) and converts it into a string formatted as 1 234.56 */
 string MoneyToString(size_t money);
 
-/* Converts weight into a string formatted as 12.345 (kilos.grams) */
+/* Converts weight in grams into a string formatted as 12.345 (kilos.grams) */
 string WeightToString(size_t weight); 
 
-/* Takes date/time in a form of tm structure and returns a string with the date formatted as DD/MM/YYYY */
+/* Takes date/time in a form of tm structure and returns a string with the date formatted as DD/MM/YYYY.
+ * If showTime is true, adds HH:MM:SS */
 string TmToString(tm date, bool showTime = false);
 
-/* Adds filler character to the end of the string to its length is less that length argument */
+/* Adds filler character to the end of the string if its length is less that width argument */
 string SetStringWidth(string input, size_t width, char filler = ' ');
