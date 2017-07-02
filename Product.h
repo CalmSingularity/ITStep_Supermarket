@@ -37,9 +37,13 @@ public:
 		);
 
 	size_t GetCode();
+	string GetName();
+	size_t GetNetWeight();
+	size_t GetGrossWeight();
 	size_t GetWidth();
 	size_t GetHeight();
 	size_t GetLength();
+	size_t GetUnitCentPrice();
 
 	// Returns productCode and productName as a string looking like '(code) "name"'
 	string GetCodeAndName(); 

@@ -1,13 +1,12 @@
-#include "Order.h"
 #include <string>
 #include <iostream>
 using namespace std;
-
+#include "Order.h"
 
 Order::Order(StockDB& m_Stock):
 	m_Stock(m_Stock)
 {	
-	totalWeight = 0;
+	totalGrossWeight = 0;
 	totalCentAmount = 0;
 	paidCentAmount = 0;
 	isSubmitted = false;
@@ -16,29 +15,85 @@ Order::Order(StockDB& m_Stock):
 	time_t currentTime = time(NULL);
 	createdAt = *localtime(&currentTime);
 
-	clog << "New order created at: " << GetCreationTime() << "\n";
+	clog << "New order created at " << GetCreationTime() << "\n";
 }
 
-Order::OrderLine::OrderLine(Product product, size_t qnt, size_t price) :
+Order::OrderLine::OrderLine(Product product, size_t qnt, size_t unitCentPrice) :
 	product(product),
 	qnt(qnt),
-	price(price)
+	unitCentPrice(unitCentPrice)
 {}
 
-bool Order::AddProduct(size_t productCode, size_t quantityToAdd)
+bool Order::AddProduct(size_t productCode, size_t qntToAdd)
 {
-	if (!m_Stock.IsInStock(productCode)) {
+	if (isSubmitted) {
+		cerr << "Cannot change the order because it's submitted for payment!\n";
+		return false;
+	}
+
+	StockDB::StockRecord stockRecord = m_Stock.ReadStockRecord(productCode);
+	OrderLine orderLine = ReadOrderLine(productCode);
+	
+	if (stockRecord.availableQnt < (qntToAdd + orderLine.qnt)) {
+		cerr << "Not enough of product " << stockRecord.product.GetCodeAndName() <<
+			" is available in the stock to add " << qntToAdd << " unit(s) to the order.\n";
 		return false;
 	}
 	
-	// TODO: Check if there is enough in stock!
-
 	if (IsInOrder(productCode)) {
-		m_ProductsInOrder.at(productCode).qnt += quantityToAdd;
 
+		m_ProductsInOrder.at(productCode).qnt += qntToAdd;
+		totalGrossWeight += stockRecord.product.GetGrossWeight() * qntToAdd;
+		totalCentAmount += stockRecord.product.GetUnitCentPrice() * qntToAdd;
+
+		OrderLine updatedOrderLine = ReadOrderLine(productCode);
+		clog << stockRecord.product.GetCodeAndName() << " is already in the order. Added " << 
+			qntToAdd << " unit(s). New quantity in the order is " << updatedOrderLine.qnt << ".\n";
+		return true;
+	}
+	else {
+		OrderLine newOrderLine(stockRecord.product, qntToAdd, stockRecord.product.GetUnitCentPrice());
+		if (m_ProductsInOrder.insert(make_pair(productCode, newOrderLine)).second) {
+			totalGrossWeight += stockRecord.product.GetGrossWeight() * qntToAdd;
+			totalCentAmount += stockRecord.product.GetUnitCentPrice() * qntToAdd;
+			clog << "New product " << stockRecord.product.GetCodeAndName() << " is added to the order with quantity "
+				<< newOrderLine.qnt << ".\n";
+			return true;
+		}
+		else {
+			cerr << "Error: new product " << stockRecord.product.GetCodeAndName() << " is not added to the order!\n";
+			return false;
+		}
+	}
+}
+
+bool Order::RemoveProduct(size_t productCode, size_t qntToRemove)
+{
+	if (isSubmitted) {
+		cerr << "Cannot change the order because it's submitted for payment!\n";
+		return false;
 	}
 
-	return true;
+	if (!IsInOrder(productCode)) {
+		cerr << "Product with code " << productCode << " is not in the order!\n";
+		return false;
+	}
+	
+	OrderLine orderLine = ReadOrderLine(productCode);
+	if (orderLine.qnt < qntToRemove) {
+		cerr << "Cannot remove " << qntToRemove << " unit(s) of " << orderLine.product.GetCodeAndName() <<
+			", because there are only " << orderLine.qnt << " unit(s) in the order.\n";
+		return false;
+	}
+	else {
+		m_ProductsInOrder.at(productCode).qnt -= qntToRemove;
+		totalGrossWeight -= orderLine.product.GetGrossWeight() * qntToRemove;
+		totalCentAmount -= orderLine.product.GetUnitCentPrice() * qntToRemove;
+		OrderLine updatedOrderLine = ReadOrderLine(productCode);
+		clog << "Removed " << qntToRemove << " unit(s) of " << orderLine.product.GetCodeAndName() <<
+			" from the order. Remaining quantity is " << updatedOrderLine.qnt << ".\n";
+		return true;
+	}
 }
 
 bool Order::IsInOrder(size_t productCode)
@@ -52,9 +107,152 @@ bool Order::IsInOrder(size_t productCode)
 	}
 }
 
+Order::OrderLine Order::ReadOrderLine(size_t productCode)
+{
+	if (!IsInOrder(productCode)) {
+		Product dummyProduct(productCode, "", 0);
+		OrderLine dummyLine(dummyProduct, 0, 0);
+		return dummyLine;
+	}
+	else {
+		return m_ProductsInOrder.at(productCode);
+	}
+}
+
+bool Order::DeleteOrderLine(size_t productCode)
+{
+	if (isSubmitted) {
+		cerr << "Cannot change the order because it's submitted for payment!\n";
+		return false;
+	}
+
+	if (!IsInOrder(productCode)) {
+		return false;
+	}
+
+	OrderLine orderLine = ReadOrderLine(productCode);
+	size_t nErased = m_ProductsInOrder.erase(productCode);
+	if (nErased >= 1) {
+		totalGrossWeight -= orderLine.product.GetGrossWeight() * orderLine.qnt;
+		totalCentAmount -= orderLine.product.GetUnitCentPrice() * orderLine.qnt;
+		clog << "Removed product " << orderLine.product.GetCodeAndName() << " from the order. " << nErased << " line(s) removed.\n";
+		return true;
+	}
+	else {
+		cerr << "Error: cannot remove product " << orderLine.product.GetCodeAndName() << " from the order.\n";
+		return false;
+	}
+}
+
 size_t Order::GetNumberOfProducts()
 {
 	return m_ProductsInOrder.size();
+}
+
+size_t Order::GetTotalAmount()
+{
+	return totalCentAmount;
+}
+
+size_t Order::GetPaidAmount()
+{
+	return paidCentAmount;
+}
+
+long long Order::GetAmountDue()
+{
+	return (totalCentAmount - paidCentAmount);
+}
+
+size_t Order::GetTotalGrossWeight()
+{
+	return totalGrossWeight;
+}
+
+bool Order::SubmitOrder()
+{
+	if (isSubmitted) {
+		cerr << "Cannot submit the order because it's already submitted!\n";
+		return false;
+	}
+
+	// check if all products are sufficient in the stock
+	for (auto it : m_ProductsInOrder) {
+		StockDB::StockRecord stockRecord = m_Stock.ReadStockRecord(it.first);
+		if (it.second.qnt > stockRecord.availableQnt) {
+			cerr << "Cannot submit the order because there is only " << stockRecord.availableQnt << 
+				" unit(s) of " << stockRecord.product.GetCodeAndName() << " is available!\n";
+			return false;
+		}
+	}
+
+	// decrease products' available quantity in the stock
+	for (auto it : m_ProductsInOrder) {
+		bool successReleaseFromStock = m_Stock.ChangeAvailableQnt(it.first, -(long long)it.second.qnt);
+		if (!successReleaseFromStock) {
+			cerr << "Critical error! Cannot release " << it.second.qnt << " unit(s) of " << 
+				it.second.product.GetCodeAndName() << 
+				" from stock. The available quantities in stock may be incorrect!\n";
+			return false;
+		}
+	}
+
+	time_t currentTime = time(NULL);
+	submittedAt = *localtime(&currentTime);
+	isSubmitted = true;
+
+	clog << "The order is submitted at " << GetSubmittedTime() << "\n";
+	return true;
+}
+
+bool Order::IsSubmitted()
+{
+	return isSubmitted;
+}
+
+bool Order::Pay(size_t paymentAmount)
+{
+	paidCentAmount += paymentAmount;
+	clog <<
+		"Just paid:   " << SetStringWidth(MoneyToString(paymentAmount), 13, true) << endl <<
+		"Total paid:  " << SetStringWidth(MoneyToString(paidCentAmount), 13, true) << endl <<
+		"Order total: " << SetStringWidth(MoneyToString(totalCentAmount), 13, true) << endl <<
+		"Due:         " << SetStringWidth(MoneyToString(GetAmountDue()), 13, true) << endl;
+	return true;
+}
+
+bool Order::IsPaid()
+{
+	if ((long long)(paidCentAmount - totalCentAmount) >= 0) {
+		return true;
+	}
+	else { 
+		return false; 
+	}
+
+}
+
+bool Order::CloseOrder()
+{
+	if (!isSubmitted) {
+		cerr << "Cannot close the order because it's not submitted!\n";
+		return false;
+	}
+	if (!IsPaid()) {
+		cerr << "Cannot close the order because it's not paid!\n";
+		return false;
+	}
+	if (isClosed) {
+		cerr << "Cannot close the order because it's already closed!\n";
+		return false;
+	}
+
+	time_t currentTime = time(NULL);
+	closedAt = *localtime(&currentTime);
+	isClosed = true;
+
+	clog << "The order is closed at " << GetSubmittedTime() << "\n";
+	return true;
 }
 
 bool Order::IsClosed()
@@ -75,5 +273,24 @@ string Order::GetSubmittedTime()
 string Order::GetClosedTime()
 {
 	return TmToString(closedAt, true);
+}
+
+string Order::PrintOrderLine(OrderLine orderLine)
+{
+	return
+		SetStringWidth(to_string(orderLine.product.GetCode()), 13) + "  " +
+		SetStringWidth(orderLine.product.GetName(), 20) + "  " +
+		SetStringWidth(MoneyToString(orderLine.unitCentPrice), 11, true) + "  " +
+		SetStringWidth(to_string(orderLine.qnt), 9, true) + "  " +
+		SetStringWidth(MoneyToString(orderLine.unitCentPrice * orderLine.qnt), 13, true) + "\n";
+}
+
+string Order::PrintAllProductsInOrder()
+{
+	string result = "Product Code   Product Name           Unit Price   Quantity   Total Price\n";
+	for (auto it : m_ProductsInOrder) {
+		result += PrintOrderLine(it.second);
+	}
+	return result;
 }
 

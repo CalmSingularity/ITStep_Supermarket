@@ -1,72 +1,46 @@
 #include "Utilities.h"
 
-
-string MoneyToString(size_t money) {
-	size_t millions = money / 100000000;
-	size_t thousands = money / 100000 - millions * 1000;
-	size_t singles = money / 100 - thousands * 1000 - millions * 1000000;
-	size_t cents = money % 100;
-
-	string result = "";
-
-	// Add heading zeros to thousands:
-	if (millions > 0) {
-		result = to_string(millions) + " ";
-		if (thousands < 100) {
-			if (thousands < 10) {
-				result += "00";
-			}
-			else {
-				result += "0";
-			}
-		}
+unsigned long long raiseToPower(unsigned int base, unsigned int power) {
+	if (power == 0) {
+		return 1;
+	}
+	if (power == 1) {
+		return base;
+	}
+	if (power == 2) {
+		return base * base;
 	}
 
-	if (thousands > 0) {
-		result += to_string(thousands) + " ";
-		if (singles < 100) {
-			if (singles < 10) {
-				result += "00";
-			}
-			else {
-				result += "0";
-			}
-		}
+	if (power >= 3) {
+		unsigned long long result = raiseToPower(base, power / 2);
+		result *= result;
+		if (power % 2 == 1)
+			result *= base;
+		return result;
 	}
-
-	result += to_string(singles) + ".";
-
-	if (cents < 10) {
-		result += "0";
-	}
-
-	result += to_string(cents);
-
-/* TRY THIS
-	const int CENTS_DIGITS = 2;
-	size_t temp = money / 10 * CENTS_DIGITS;  // get rid of cents
-	size_t nDigits = 0;  
-	while (temp > 0) { 
-		// count the number of digits, excluding cents
-		++nDigits;
-		temp / 10;
-	}
-
-	string result = "";
-	for (i = nDigits - 1; i > 0; --i) {
-		string += to_string(money / ((10 * i) * (10 * CENTS_DIGITS)));
-		if (i % 3 == 0) {
-			string += " ";
-		}
-	}
-	string += to_string(money % 10);
-	string += ".";
-	string += to_string(money % (10 * CENTS_DIGITS));
-
-*/
-	return result;
 }
 
+string MoneyToString(long long money) {
+	string result = to_string(money);
+
+	if (result.length() < 2) {
+		result.insert(0, "0.0");
+	}
+	else if (result.length() == 2) {
+		result.insert(0, "0.");
+	}
+	else {
+		int pos = result.length() - 2;
+		result.insert(pos, ".");
+		pos -= 3;
+		while (pos > 0) {
+			result.insert(pos, " ");
+			pos -= 3;
+		}
+	}
+
+	return result;
+}
 
 string WeightToString(size_t weight)
 {
@@ -121,15 +95,20 @@ string TmToString(tm date, bool showTime)
 	return result;
 }
 
-string SetStringWidth(string input, size_t length, char filler) 
+string SetStringWidth(string input, size_t length, bool adjustRight, char filler) 
 {
-	string result = input;
+	string result = "";
+	if (!adjustRight) {
+		result += input;
+	}
 	size_t to_add = length - input.size();
 	if (to_add > 0)	{
 		for (size_t i = 0; i < to_add; ++i)	{
 			result.push_back(filler);
 		}
-		
+	}
+	if (adjustRight) {
+		result += input;
 	}
 	return result;
 }

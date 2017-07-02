@@ -18,43 +18,60 @@ private:
 	{
 		Product product;
 		size_t qnt;  // quantity added to the order
-		size_t unitPrice;
-		OrderLine(Product product, size_t qnt, size_t price);  // constructor
+		size_t unitCentPrice;
+		OrderLine(Product product, size_t qnt, size_t unitCentPrice);  // constructor
 	};
 
-	/* The following map stores productCode as a key. No duplicates allowed.
-	 * OrderLine as a value stores the product itself (Product object), its quantity added to the order and its unit price. */
+
+	/* The following map stores productCode as a map key. No duplicates allowed.
+	 * OrderLine as a map value stores the product itself (Product object), 
+	 * its quantity added to the order and its unit price. */
 	map<size_t, OrderLine> m_ProductsInOrder;
 	
 	StockDB& m_Stock;    // which stock database the order is connected to
 
-	size_t totalWeight;  // total gross weight of the order
-	size_t totalCentAmount;
+	size_t totalCentAmount; // total price of all products in the order
+	size_t totalGrossWeight;     // total gross weight of the order
 	size_t paidCentAmount;
-	bool isSubmitted; // if the order is submitted, no further changes to m_ProductsInOrder are allowed as it's prepared for payment
-	bool isClosed;    // if the order is closed, it's submitted and fully paid
+	bool isSubmitted;       // if the order is submitted, no further changes to m_ProductsInOrder are allowed as it's prepared for payment
+	bool isClosed;          // if the order is closed, it's submitted and fully paid
 	tm createdAt;
 	tm submittedAt;
 	tm closedAt;
 
 public:
+
 	Order(StockDB& m_Stock);  // constructor
 	
 	/* Checks if the product quantity in the stock is sufficient and then
-	 * a) adds a new product to the order 
-	 * b) or changes its quantity if it's already in the order */
+	 * a) adds a new product to the order, 
+	 * b) or changes its quantity if it's already in the order. 
+	 * Does not change available quantity in the stock.*/
 	bool AddProduct(size_t productCode, size_t qntToAdd);
+
+	/* Removes qntToRemove units of the product from the order.
+	 * If the product is not in the order or the quantity in the order < qntToRemove,
+	 * does nothing and returns false. */
+	bool RemoveProduct(size_t productCode, size_t qntToRemove);
 
 	/* Checks if the product is in the order with the quantity > 0 */
 	bool IsInOrder(size_t productCode); 
+
+	/* Looks for OrderLine with productCode in the order and returns it if successful.
+	* If productCode is not found (product is not in the order), returns OrderLine with dummyProduct
+	* where quantity == 0 and unitPrice == 0. */
+	OrderLine ReadOrderLine(size_t productCode);
+
+	/* Looks for OrderLine with productCode in the order and deletes it. Returns true if successful. */
+	bool DeleteOrderLine(size_t productCode);
 
 	/* Returns the current number of different products in the order */
 	size_t GetNumberOfProducts();  
 
 	size_t GetTotalAmount();
 	size_t GetPaidAmount();
-	size_t GetAmountDue();
-	size_t GetTotalWeight();
+	long long GetAmountDue();
+	size_t GetTotalGrossWeight();
 
 	/* Prepares order for payment: 
 	 * Checks once again if the quantity of each product in the order is sufficient in the stock.
@@ -87,4 +104,13 @@ public:
 
 	/* Returns date and time when the order was closed in a form of a string */
 	string GetClosedTime();
+
+	/* Returns a string with productCode, productName, unitCentPrice, 
+	 * quantity in the order and total price of the product in the order.*/
+	string PrintOrderLine(OrderLine orderLine);
+
+	/* Returns a string with all products in the order with quantity > 0 :
+	* One line stands for each product with productCode, productName, unitCentPrice, 
+	* quantity and total price of the product in the order.*/
+	string PrintAllProductsInOrder();
 };

@@ -35,6 +35,21 @@ size_t Product::GetCode()
 	return productCode;
 }
 
+string Product::GetName()
+{
+	return productName;
+}
+
+size_t Product::GetNetWeight()
+{
+	return weightNet;
+}
+
+size_t Product::GetGrossWeight()
+{
+	return weightGross;
+}
+
 string Product::GetFullDetails()
 {
 	string result =
@@ -87,6 +102,11 @@ size_t Product::GetHeight()
 size_t Product::GetLength()
 {
 	return this->length;
+}
+
+size_t Product::GetUnitCentPrice()
+{
+	return unitCentPrice;
 }
 
 

@@ -9,7 +9,7 @@ using namespace std;
 class StockDB 
 {
 
-private:
+public:
 
 	struct StockRecord  // individual record in the stock database
 	{
@@ -17,6 +17,8 @@ private:
 		size_t availableQnt;
 		StockRecord(Product product, size_t availableQnt);  // constructor
 	};
+
+private:
 
 	/* The following map stores productCode as a key. No duplicates allowed.
 	 * StockRecord as a value stores the product itself (Product object) and available quantity in units. */
@@ -33,7 +35,8 @@ public:
 	bool IsInStock(size_t productCode);
 
 	/* Looks for StockRecord with productCode in the stock and returns it if successful.
-	 * If productCode is not found (product is not in stock), returns StockRecord with dummyProduct where ProductCode == 0 and quantity == 0. */
+	 * If productCode is not found (product is not in stock), returns StockRecord with dummyProduct 
+	 * where quantity == 0. */
 	StockRecord ReadStockRecord(size_t productCode);
 
 	/* Returns the available quantity of the product or 0 if it's not in stock */
@@ -48,9 +51,9 @@ public:
 	//bool UpdateStockRecord();
 
 	/* Returns a string with productCode, productName and available quantity */
-	string GetProductInStock(size_t productCode);
+	string PrintStockRecord(StockRecord stockRecord);
 
-	/* Returns a string with all products available in stock with quantity > 0 :
+	/* Returns a string with all products available in the stock.
 	 * One line stands for each product with productCode, productName, available quantity. */
-	string GetAllProductsInStock(); 
+	string PrintAllProductsInStock(); 
 };
