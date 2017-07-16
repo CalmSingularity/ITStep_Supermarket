@@ -3,13 +3,13 @@
 Product::Product(
 	size_t productCode,
 	string productName,
-	size_t unitCentPrice,
+	long long unitCentPrice,
 	string manufacturer,
-	size_t weightNet,
-	size_t weightGross,
-	size_t width,
-	size_t height,
-	size_t length)
+	long long weightNet,
+	long long weightGross,
+	long long width,
+	long long height,
+	long long length)
 	:
 	productCode(productCode),
 	productName(productName),
@@ -40,12 +40,12 @@ string Product::GetName()
 	return productName;
 }
 
-size_t Product::GetNetWeight()
+long long Product::GetNetWeight()
 {
 	return weightNet;
 }
 
-size_t Product::GetGrossWeight()
+long long Product::GetGrossWeight()
 {
 	return weightGross;
 }
@@ -89,22 +89,22 @@ string Product::GetCodeAndName()
 	return "(" + to_string(productCode) + ") \"" + productName + "\"";
 }
 
-size_t Product::GetWidth()
+long long Product::GetWidth()
 {
 	return this->width;
 }
 
-size_t Product::GetHeight()
+long long Product::GetHeight()
 {
 	return this->height;
 }
 
-size_t Product::GetLength()
+long long Product::GetLength()
 {
 	return this->length;
 }
 
-size_t Product::GetUnitCentPrice()
+long long Product::GetUnitCentPrice()
 {
 	return unitCentPrice;
 }

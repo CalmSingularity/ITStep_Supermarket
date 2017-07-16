@@ -1,12 +1,12 @@
 #include "StockDB.h"
 
 
-StockDB::StockRecord::StockRecord(Product product, size_t availableQnt) :
+StockDB::StockRecord::StockRecord(Product product, long long availableQnt) :
 	product(product),
 	availableQnt(availableQnt)
 {}
 
-bool StockDB::CreateStockRecord(Product product, size_t availableQnt)
+bool StockDB::CreateStockRecord(Product product, long long availableQnt)
 {
 	if (IsInStock(product.GetCode())) {
 		clog << "Product " << product.GetCodeAndName() << " is already in the stock!\n";
@@ -48,7 +48,7 @@ StockDB::StockRecord StockDB::ReadStockRecord(size_t productCode)
 	}
 }
 
-size_t StockDB::GetAvailableQnt(size_t productCode)
+long long StockDB::GetAvailableQnt(size_t productCode)
 {
 	StockRecord stockRecord = ReadStockRecord(productCode);
 	return stockRecord.availableQnt;
@@ -82,7 +82,7 @@ bool StockDB::DeleteStockRecord(size_t productCode)
 		return false;
 	}
 
-	size_t nErased = m_ProductsInStock.erase(productCode);
+	int nErased = m_ProductsInStock.erase(productCode);
 	if (nErased >= 1) {
 		clog << "Removed product with code " << productCode << " from the stock. " << nErased << " record(s) removed.\n";
 		return true;

@@ -17,9 +17,9 @@ private:
 	struct OrderLine  // one line in the order
 	{
 		Product product;
-		size_t qnt;  // quantity added to the order
-		size_t unitCentPrice;
-		OrderLine(Product product, size_t qnt, size_t unitCentPrice);  // constructor
+		long long qnt;  // quantity added to the order
+		long long unitCentPrice;
+		OrderLine(Product product, long long qnt, long long unitCentPrice);  // constructor
 	};
 
 
@@ -30,9 +30,9 @@ private:
 	
 	StockDB& m_Stock;    // which stock database the order is connected to
 
-	size_t totalCentAmount; // total price of all products in the order
-	size_t totalGrossWeight;     // total gross weight of the order
-	size_t paidCentAmount;
+	long long totalCentAmount; // total price of all products in the order
+	long long totalGrossWeight;     // total gross weight of the order
+	long long paidCentAmount;
 	bool isSubmitted;       // if the order is submitted, no further changes to m_ProductsInOrder are allowed as it's prepared for payment
 	bool isClosed;          // if the order is closed, it's submitted and fully paid
 	tm createdAt;
@@ -47,12 +47,12 @@ public:
 	 * a) adds a new product to the order, 
 	 * b) or changes its quantity if it's already in the order. 
 	 * Does not change available quantity in the stock.*/
-	bool AddProduct(size_t productCode, size_t qntToAdd);
+	bool AddProduct(size_t productCode, long long qntToAdd);
 
 	/* Removes qntToRemove units of the product from the order.
 	 * If the product is not in the order or the quantity in the order < qntToRemove,
 	 * does nothing and returns false. */
-	bool RemoveProduct(size_t productCode, size_t qntToRemove);
+	bool RemoveProduct(size_t productCode, long long qntToRemove);
 
 	/* Checks if the product is in the order with the quantity > 0 */
 	bool IsInOrder(size_t productCode); 
@@ -66,12 +66,12 @@ public:
 	bool DeleteOrderLine(size_t productCode);
 
 	/* Returns the current number of different products in the order */
-	size_t GetNumberOfProducts();  
+	long long GetNumberOfProducts();  
 
-	size_t GetTotalAmount();
-	size_t GetPaidAmount();
+	long long GetTotalAmount();
+	long long GetPaidAmount();
 	long long GetAmountDue();
-	size_t GetTotalGrossWeight();
+	long long GetTotalGrossWeight();
 
 	/* Prepares order for payment: 
 	 * Checks once again if the quantity of each product in the order is sufficient in the stock.
@@ -86,7 +86,7 @@ public:
 	/* Accepts full or partial payment for the order.
 	 * Returns true if successful.
 	 * paymentAmount includes cents/copeiks. */
-	bool Pay(size_t paymentAmount);
+	bool Pay(long long paymentAmount);
 
 	/* Returns true if the order is fully paid */
 	bool IsPaid();

@@ -42,10 +42,10 @@ string MoneyToString(long long money) {
 	return result;
 }
 
-string WeightToString(size_t weight)
+string WeightToString(long long weight)
 {
-	size_t kilos = weight / 1000;
-	size_t grams = weight % 1000;
+	long long kilos = weight / 1000;
+	long long grams = weight % 1000;
 
 	string result = to_string(kilos) + ".";
 
@@ -95,15 +95,15 @@ string TmToString(tm date, bool showTime)
 	return result;
 }
 
-string SetStringWidth(string input, size_t length, bool adjustRight, char filler) 
+string SetStringWidth(string input, int length, bool adjustRight, char filler) 
 {
 	string result = "";
 	if (!adjustRight) {
 		result += input;
 	}
-	size_t to_add = length - input.size();
+	int to_add = length - input.size();
 	if (to_add > 0)	{
-		for (size_t i = 0; i < to_add; ++i)	{
+		for (int i = 0; i < to_add; ++i)	{
 			result.push_back(filler);
 		}
 	}

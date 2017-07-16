@@ -14,8 +14,8 @@ public:
 	struct StockRecord  // individual record in the stock database
 	{
 		Product product;
-		size_t availableQnt;
-		StockRecord(Product product, size_t availableQnt);  // constructor
+		long long availableQnt;
+		StockRecord(Product product, long long availableQnt);  // constructor
 	};
 
 private:
@@ -29,7 +29,7 @@ public:
 
 	/* Adds a new product to the stock with quantity availableQnt. Returns true if successful. 
 	 * If the product with such productCode already extists in the stock, does nothing and returns false.*/
-	bool CreateStockRecord(Product product, size_t availableQnt = 0);
+	bool CreateStockRecord(Product product, long long availableQnt = 0);
 	
 	/* Checks if the product is in stock */
 	bool IsInStock(size_t productCode);
@@ -40,7 +40,7 @@ public:
 	StockRecord ReadStockRecord(size_t productCode);
 
 	/* Returns the available quantity of the product or 0 if it's not in stock */
-	size_t GetAvailableQnt(size_t productCode); 
+	long long GetAvailableQnt(size_t productCode); 
 
 	/* Updates StockRecord by changing available quantity of product in the stock by delta. Returns true if successful. */
 	bool ChangeAvailableQnt(size_t productCode, long long delta);

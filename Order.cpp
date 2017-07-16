@@ -18,13 +18,13 @@ Order::Order(StockDB& m_Stock):
 	clog << "New order created at " << GetCreationTime() << "\n";
 }
 
-Order::OrderLine::OrderLine(Product product, size_t qnt, size_t unitCentPrice) :
+Order::OrderLine::OrderLine(Product product, long long qnt, long long unitCentPrice) :
 	product(product),
 	qnt(qnt),
 	unitCentPrice(unitCentPrice)
 {}
 
-bool Order::AddProduct(size_t productCode, size_t qntToAdd)
+bool Order::AddProduct(size_t productCode, long long qntToAdd)
 {
 	if (isSubmitted) {
 		cerr << "Cannot change the order because it's submitted for payment!\n";
@@ -67,7 +67,7 @@ bool Order::AddProduct(size_t productCode, size_t qntToAdd)
 	}
 }
 
-bool Order::RemoveProduct(size_t productCode, size_t qntToRemove)
+bool Order::RemoveProduct(size_t productCode, long long qntToRemove)
 {
 	if (isSubmitted) {
 		cerr << "Cannot change the order because it's submitted for payment!\n";
@@ -131,7 +131,7 @@ bool Order::DeleteOrderLine(size_t productCode)
 	}
 
 	OrderLine orderLine = ReadOrderLine(productCode);
-	size_t nErased = m_ProductsInOrder.erase(productCode);
+	int nErased = m_ProductsInOrder.erase(productCode);
 	if (nErased >= 1) {
 		totalGrossWeight -= orderLine.product.GetGrossWeight() * orderLine.qnt;
 		totalCentAmount -= orderLine.product.GetUnitCentPrice() * orderLine.qnt;
@@ -144,17 +144,17 @@ bool Order::DeleteOrderLine(size_t productCode)
 	}
 }
 
-size_t Order::GetNumberOfProducts()
+long long Order::GetNumberOfProducts()
 {
 	return m_ProductsInOrder.size();
 }
 
-size_t Order::GetTotalAmount()
+long long Order::GetTotalAmount()
 {
 	return totalCentAmount;
 }
 
-size_t Order::GetPaidAmount()
+long long Order::GetPaidAmount()
 {
 	return paidCentAmount;
 }
@@ -164,7 +164,7 @@ long long Order::GetAmountDue()
 	return (totalCentAmount - paidCentAmount);
 }
 
-size_t Order::GetTotalGrossWeight()
+long long Order::GetTotalGrossWeight()
 {
 	return totalGrossWeight;
 }
@@ -188,7 +188,7 @@ bool Order::SubmitOrder()
 
 	// decrease products' available quantity in the stock
 	for (auto it : m_ProductsInOrder) {
-		bool successReleaseFromStock = m_Stock.ChangeAvailableQnt(it.first, -(long long)it.second.qnt);
+		bool successReleaseFromStock = m_Stock.ChangeAvailableQnt(it.first, -it.second.qnt);
 		if (!successReleaseFromStock) {
 			cerr << "Critical error! Cannot release " << it.second.qnt << " unit(s) of " << 
 				it.second.product.GetCodeAndName() << 
@@ -210,7 +210,7 @@ bool Order::IsSubmitted()
 	return isSubmitted;
 }
 
-bool Order::Pay(size_t paymentAmount)
+bool Order::Pay(long long paymentAmount)
 {
 	paidCentAmount += paymentAmount;
 	clog <<
@@ -223,7 +223,7 @@ bool Order::Pay(size_t paymentAmount)
 
 bool Order::IsPaid()
 {
-	if ((long long)(paidCentAmount - totalCentAmount) >= 0) {
+	if ((paidCentAmount - totalCentAmount) >= 0) {
 		return true;
 	}
 	else { 
