@@ -47,12 +47,12 @@ public:
 	 * a) adds a new product to the order, 
 	 * b) or changes its quantity if it's already in the order. 
 	 * Does not change available quantity in the stock.*/
-	bool AddProduct(size_t productCode, long long qntToAdd);
+	bool AddProduct(size_t productCode, int qntToAdd);
 
 	/* Removes qntToRemove units of the product from the order.
 	 * If the product is not in the order or the quantity in the order < qntToRemove,
 	 * does nothing and returns false. */
-	bool RemoveProduct(size_t productCode, long long qntToRemove);
+	bool RemoveProduct(size_t productCode, int qntToRemove);
 
 	/* Checks if the product is in the order with the quantity > 0 */
 	bool IsInOrder(size_t productCode); 
@@ -97,20 +97,13 @@ public:
 	bool IsClosed();
 
 	/* Returns date and time when the order was created in a form of a string */
-	string GetCreationTime();
+	tm GetCreationTime();
 
 	/* Returns date and time when the order was submitted in a form of a string */
-	string GetSubmittedTime(); 
+	tm GetSubmittedTime(); 
 
 	/* Returns date and time when the order was closed in a form of a string */
-	string GetClosedTime();
+	tm GetClosedTime();
 
-	/* Returns a string with productCode, productName, unitCentPrice, 
-	 * quantity in the order and total price of the product in the order.*/
-	string PrintOrderLine(OrderLine orderLine);
-
-	/* Returns a string with all products in the order with quantity > 0 :
-	* One line stands for each product with productCode, productName, unitCentPrice, 
-	* quantity and total price of the product in the order.*/
-	string PrintAllProductsInOrder();
+	friend class Receipt;
 };

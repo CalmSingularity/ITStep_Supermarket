@@ -1,6 +1,5 @@
 #include "StockDB.h"
 
-
 StockDB::StockRecord::StockRecord(Product product, long long availableQnt) :
 	product(product),
 	availableQnt(availableQnt)
@@ -70,8 +69,8 @@ bool StockDB::ChangeAvailableQnt(size_t productCode, long long delta)
 	else {
 		m_ProductsInStock.at(productCode).availableQnt += delta;
 		stockRecord = ReadStockRecord(productCode);
-		clog << "Changed quantity of " << stockRecord.product.GetCodeAndName() << " by " << to_string(delta) 
-			<< ". New quantity = " << to_string(stockRecord.availableQnt) << "\n";
+		clog << "Changed quantity of " << stockRecord.product.GetCodeAndName() << " in stock by "  
+			<< to_string(delta) << ". New quantity = " << to_string(stockRecord.availableQnt) << "\n";
 		return true;
 	}
 }
@@ -96,14 +95,14 @@ bool StockDB::DeleteStockRecord(size_t productCode)
 string StockDB::PrintStockRecord(StockRecord stockRecord)
 {
 	return
-		SetStringWidth(to_string(stockRecord.product.productCode), 13) + " " +
-		SetStringWidth(stockRecord.product.productName, 20) + " " +
+		SetStringWidth(to_string(stockRecord.product.productCode), 14) + " " +
+		SetStringWidth(stockRecord.product.productName, 25) + " " +
 		SetStringWidth(to_string(stockRecord.availableQnt), 7) + "\n";
 }
 
 string StockDB::PrintAllProductsInStock()
 {
-	string result = "Product Code  Product Name         Available Qnt\n";
+	string result = "Product Code | Product Name            | Available Qnt\n";
 	for (auto it : m_ProductsInStock) {
 		result += PrintStockRecord(it.second);
 	}

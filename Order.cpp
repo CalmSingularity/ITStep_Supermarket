@@ -15,7 +15,7 @@ Order::Order(StockDB& m_Stock):
 	time_t currentTime = time(NULL);
 	createdAt = *localtime(&currentTime);
 
-	clog << "New order created at " << GetCreationTime() << "\n";
+	clog << "New order created at " << TmToString(GetCreationTime(), true) << "\n";
 }
 
 Order::OrderLine::OrderLine(Product product, long long qnt, long long unitCentPrice) :
@@ -24,8 +24,12 @@ Order::OrderLine::OrderLine(Product product, long long qnt, long long unitCentPr
 	unitCentPrice(unitCentPrice)
 {}
 
-bool Order::AddProduct(size_t productCode, long long qntToAdd)
+bool Order::AddProduct(size_t productCode, int qntToAdd)
 {
+	if (qntToAdd <= 0) {
+		return false;
+	}
+
 	if (isSubmitted) {
 		cerr << "Cannot change the order because it's submitted for payment!\n";
 		return false;
@@ -67,8 +71,12 @@ bool Order::AddProduct(size_t productCode, long long qntToAdd)
 	}
 }
 
-bool Order::RemoveProduct(size_t productCode, long long qntToRemove)
+bool Order::RemoveProduct(size_t productCode, int qntToRemove)
 {
+	if (qntToRemove <= 0) {
+		return false;
+	}
+
 	if (isSubmitted) {
 		cerr << "Cannot change the order because it's submitted for payment!\n";
 		return false;
@@ -99,7 +107,7 @@ bool Order::RemoveProduct(size_t productCode, long long qntToRemove)
 bool Order::IsInOrder(size_t productCode)
 {
 	if (m_ProductsInOrder.find(productCode) == m_ProductsInOrder.end()) {
-		cerr << "Product with code " << productCode << " is not in the order!\n";
+		cerr << "Product with code " << productCode << " is not in the order.\n";
 		return false;
 	}
 	else {
@@ -201,7 +209,7 @@ bool Order::SubmitOrder()
 	submittedAt = *localtime(&currentTime);
 	isSubmitted = true;
 
-	clog << "The order is submitted at " << GetSubmittedTime() << "\n";
+	clog << "The order is submitted at " << TmToString(GetSubmittedTime(), true) << "\n";
 	return true;
 }
 
@@ -212,12 +220,16 @@ bool Order::IsSubmitted()
 
 bool Order::Pay(long long paymentAmount)
 {
+	if (!isSubmitted) {
+		cerr << "Cannot pay for the order because it's not submitted!\n";
+		return false;
+	}
+	if (isClosed) {
+		cerr << "Cannot pay for the order because it's already closed!\n";
+		return false;
+	}
 	paidCentAmount += paymentAmount;
-	clog <<
-		"Just paid:   " << SetStringWidth(MoneyToString(paymentAmount), 13, true) << endl <<
-		"Total paid:  " << SetStringWidth(MoneyToString(paidCentAmount), 13, true) << endl <<
-		"Order total: " << SetStringWidth(MoneyToString(totalCentAmount), 13, true) << endl <<
-		"Due:         " << SetStringWidth(MoneyToString(GetAmountDue()), 13, true) << endl;
+	clog << "Accepted payment of " << MoneyToString(paymentAmount) << endl;
 	return true;
 }
 
@@ -251,7 +263,7 @@ bool Order::CloseOrder()
 	closedAt = *localtime(&currentTime);
 	isClosed = true;
 
-	clog << "The order is closed at " << GetSubmittedTime() << "\n";
+	clog << "The order is closed at " << TmToString(GetSubmittedTime(), true) << "\n";
 	return true;
 }
 
@@ -260,37 +272,17 @@ bool Order::IsClosed()
 	return isClosed;
 }
 
-string Order::GetCreationTime()
+tm Order::GetCreationTime()
 {
-	return TmToString(createdAt, true);
+	return createdAt;
 }
 
-string Order::GetSubmittedTime()
+tm Order::GetSubmittedTime()
 {
-	return TmToString(submittedAt, true);
+	return submittedAt;
 }
 
-string Order::GetClosedTime()
+tm Order::GetClosedTime()
 {
-	return TmToString(closedAt, true);
+	return closedAt;
 }
-
-string Order::PrintOrderLine(OrderLine orderLine)
-{
-	return
-		SetStringWidth(to_string(orderLine.product.GetCode()), 13) + "  " +
-		SetStringWidth(orderLine.product.GetName(), 20) + "  " +
-		SetStringWidth(MoneyToString(orderLine.unitCentPrice), 11, true) + "  " +
-		SetStringWidth(to_string(orderLine.qnt), 9, true) + "  " +
-		SetStringWidth(MoneyToString(orderLine.unitCentPrice * orderLine.qnt), 13, true) + "\n";
-}
-
-string Order::PrintAllProductsInOrder()
-{
-	string result = "Product Code   Product Name           Unit Price   Quantity   Total Price\n";
-	for (auto it : m_ProductsInOrder) {
-		result += PrintOrderLine(it.second);
-	}
-	return result;
-}
-
