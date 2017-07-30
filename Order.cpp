@@ -30,7 +30,11 @@ bool Order::AddProduct(size_t productCode, int qntToAdd)
 		return false;
 	}
 
-	if (isSubmitted) {
+	if (isClosed) {
+		cerr << "Cannot change the order because it's closed!\n";
+		return false;
+	} 
+	else if (isSubmitted) {
 		cerr << "Cannot change the order because it's submitted for payment!\n";
 		return false;
 	}
@@ -77,7 +81,11 @@ bool Order::RemoveProduct(size_t productCode, int qntToRemove)
 		return false;
 	}
 
-	if (isSubmitted) {
+	if (isClosed) {
+		cerr << "Cannot change the order because it's closed!\n";
+		return false;
+	}
+	else if (isSubmitted) {
 		cerr << "Cannot change the order because it's submitted for payment!\n";
 		return false;
 	}
@@ -129,7 +137,11 @@ Order::OrderLine Order::ReadOrderLine(size_t productCode)
 
 bool Order::DeleteOrderLine(size_t productCode)
 {
-	if (isSubmitted) {
+	if (isClosed) {
+		cerr << "Cannot change the order because it's closed!\n";
+		return false;
+	}
+	else if (isSubmitted) {
 		cerr << "Cannot change the order because it's submitted for payment!\n";
 		return false;
 	}

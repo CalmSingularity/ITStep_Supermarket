@@ -30,8 +30,8 @@ private:
 	
 	StockDB& m_Stock;    // which stock database the order is connected to
 
-	long long totalCentAmount; // total price of all products in the order
-	long long totalGrossWeight;     // total gross weight of the order
+	long long totalCentAmount;   // total price of all products in the order
+	long long totalGrossWeight;  // total gross weight of the order
 	long long paidCentAmount;
 	bool isSubmitted;       // if the order is submitted, no further changes to m_ProductsInOrder are allowed as it's prepared for payment
 	bool isClosed;          // if the order is closed, it's submitted and fully paid

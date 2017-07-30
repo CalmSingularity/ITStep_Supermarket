@@ -11,7 +11,7 @@ private:
 	size_t productCode;
 	string productName;
 	long long unitCentPrice; // price of one item of the product WITH cents/copeiks (*100)
-	string manufacturer;  // name of the manufacturer of the product
+	string manufacturer;     // name of the manufacturer of the product
 	long long weightNet;     // net weight of one item of the product in grams
 	long long weightGross;   // gross weight of one item of the product in grams
 	long long width, height, length;   // dimensions in millimiters
